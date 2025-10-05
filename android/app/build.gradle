@@ -102,6 +102,7 @@ android {
             // see https://reactnative.dev/docs/signed-apk-android.
             signingConfig signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
+            shrinkResources
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
     }
@@ -117,3 +118,7 @@ dependencies {
         implementation jscFlavor
     }
 }
+
+project.ext.react = [
+    enableHermes: true, // Рекомендуется для React Native
+]
