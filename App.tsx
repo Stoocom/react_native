@@ -1,38 +1,27 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { ShiftsScreen } from './src/screens/ShiftsScreen';
+import { ShiftScreen } from './src/screens/ShiftScreen';
 
-import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
-import {
-  SafeAreaProvider,
-} from 'react-native-safe-area-context';
-import { useEffect } from 'react';
-import { GeoLocation } from './src/components/GeoLocation/GeoLocation';
+const Stack = createNativeStackNavigator();
 
 function App() {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  useEffect(() => {
-    console.log('App rendered')
-  }, []);
-
   return (
-    <SafeAreaProvider>
-      <View style={styles.container}>
-        <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-        <GeoLocation />
-      </View>
-    </SafeAreaProvider >
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Shifts">
+        <Stack.Screen
+          name="Shifts"
+          component={ShiftsScreen}
+          options={{ title: 'Смены' }}
+        />
+        <Stack.Screen
+          name="Shift"
+          component={ShiftScreen}
+          options={{ title: 'Смены' }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
 
 export default App;

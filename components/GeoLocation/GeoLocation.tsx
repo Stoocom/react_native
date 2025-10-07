@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, PermissionsAndroid, Platform } from 'react-native';
+import { Button, View, Text, PermissionsAndroid, Platform } from 'react-native';
 import Geolocation from '@react-native-community/geolocation';
-import { Shifts } from '../Shifts/Shifts.tsx';
+import { apiService } from '../../services/api/api.tsx';
 
 export const GeoLocation = () => {
-  const [location, setLocation] = useState<any>();
-  const [errorLocation, setErrorLocation] = useState('');
+  const [location, setLocation] = useState(null);
+  const [error, setError] = useState('');
 
   const requestLocationPermission = async () => {
     if (Platform.OS === 'android') {
@@ -32,16 +32,18 @@ export const GeoLocation = () => {
   const getCurrentLocation = async () => {
     Geolocation.getCurrentPosition(
       position => {
-        const { latitude, longitude } = position.coords;
-        setLocation({
-          latitude,
-          longitude,
-        });
 
-        setErrorLocation('');
+        const { latitude, longitude } = position.coords;
+        const result = apiService.get('https://mobile.handswork.pro/api/shifts/map-list-unauthorized', {
+          latitude,
+          longitude
+        }).then((res) => {
+          console.log('result', res)
+        });
+        setError('');
       },
       error => {
-        setErrorLocation(error.message);
+        setError(error.message);
         setLocation(null);
       },
       {
@@ -52,32 +54,35 @@ export const GeoLocation = () => {
     );
   };
 
+  const handleGetLocation = async () => {
+    const hasPermission = await requestLocationPermission();
+    console.log('hasPermission', hasPermission)
+    if (hasPermission) {
+      getCurrentLocation();
+    } else {
+      setError('Разрешение на доступ к геопозиции не предоставлено');
+    }
+  };
+
   useEffect(() => {
-
-    const handleGetLocation = async () => {
-      const hasPermission = await requestLocationPermission();
-      console.log('hasPermission', hasPermission)
-      if (hasPermission) {
-        getCurrentLocation();
-      } else {
-        setErrorLocation('Разрешение на доступ к геопозиции не предоставлено');
-      }
-    };
-
     handleGetLocation();
   }, [])
 
   return (
     <View>
+      <Button title="Получить текущую геопозицию" onPress={handleGetLocation} />
       {location && (
         <View style={{ marginTop: 20 }}>
           <Text>Широта: {location.latitude}</Text>
           <Text>Долгота: {location.longitude}</Text>
+          <Text>Точность: {location.accuracy} метров</Text>
+          {location.altitude && (
+            <Text>Высота: {location.altitude} метров</Text>
+          )}
         </View>
       )}
-      {location && <Shifts latitude={location.latitude} longitude={location.longitude} />}
-      {errorLocation && (
-        <Text style={{ color: 'red', marginTop: 20 }}>Ошибка: {errorLocation}</Text>
+      {error && (
+        <Text style={{ color: 'red', marginTop: 20 }}>Ошибка: {error}</Text>
       )}
     </View>
   );
