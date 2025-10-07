@@ -30,7 +30,9 @@
 ## Запуск with metro && Android Studio
 
 npm install
+
 npx react-native start --reset-cache
+
 npm react-native run-android --active-arch-only
 
 
