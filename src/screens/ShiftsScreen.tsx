@@ -56,7 +56,6 @@ function ShiftsScreen() {
   useEffect(() => {
     const handleGetLocation = async () => {
       const hasPermission = await requestLocationPermission();
-      console.log('hasPermission', hasPermission)
       if (hasPermission) {
         getCurrentLocation();
       } else {
